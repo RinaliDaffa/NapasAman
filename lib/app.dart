@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
-import 'core/firebase/firebase_service.dart';
 import 'shared/providers/auth_provider.dart';
+import 'features/alerts/presentation/providers/alert_provider.dart';
 import 'shared/widgets/app_bottom_nav.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
 import 'features/home/presentation/screens/home_screen.dart';
@@ -17,6 +17,7 @@ class NapasAmanApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => AlertProvider()),
       ],
       child: MaterialApp(
         title: 'NapasAman',
