@@ -52,6 +52,27 @@ class _AlertsScreenState extends State<AlertsScreen> with SingleTickerProviderSt
       appBar: AppBar(
         title: const Text('Sistem Peringatan'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Cek AQI Sekarang',
+            onPressed: () async {
+              final alertProvider = context.read<AlertProvider>();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Memeriksa AQI untuk semua threshold...'),
+                  duration: Duration(seconds: 1),
+                ),
+              );
+              await alertProvider.manualCheck();
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Pemeriksaan selesai')),
+                );
+              }
+            },
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           tabs: const [

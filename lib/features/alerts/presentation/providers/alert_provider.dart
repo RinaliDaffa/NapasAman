@@ -1,17 +1,22 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../data/models/alert_threshold.dart';
 import '../../data/models/alert_history.dart';
 import '../../data/services/firestore_alert_service.dart';
 import '../../data/services/notification_service.dart';
+import '../../../../core/api/air_quality_api_service.dart';
 
 class AlertProvider extends ChangeNotifier {
   final FirestoreAlertService _firestoreService = FirestoreAlertService();
   final NotificationService _notificationService = NotificationService();
+  final AirQualityApiService _apiService = AirQualityApiService();
 
   List<AlertThreshold> _thresholds = [];
   List<AlertHistory> _alertHistory = [];
   bool _isLoading = false;
   String? _error;
+  String? _userId;
+  Timer? _monitoringTimer;
 
   AlertProvider() {
     initialize();
@@ -37,12 +42,19 @@ class AlertProvider extends ChangeNotifier {
   Future<void> loadThresholds(String userId) async {
     _isLoading = true;
     _error = null;
+    _userId = userId;
     notifyListeners();
 
     try {
       _thresholds = await _firestoreService.getThresholds(userId);
       _isLoading = false;
       notifyListeners();
+
+      // Auto-check AQI against thresholds after loading
+      await checkAllThresholds();
+
+      // Start periodic monitoring (every 15 minutes)
+      _startMonitoring();
     } catch (e) {
       _error = 'Failed to load thresholds: $e';
       _isLoading = false;
@@ -53,6 +65,7 @@ class AlertProvider extends ChangeNotifier {
 
   /// Load alert history
   Future<void> loadAlertHistory(String userId) async {
+    _userId = userId;
     try {
       _alertHistory = await _firestoreService.getAlertHistory(userId);
       notifyListeners();
@@ -60,6 +73,84 @@ class AlertProvider extends ChangeNotifier {
       _error = 'Failed to load alert history: $e';
       debugPrint(_error);
       notifyListeners();
+    }
+  }
+
+  /// Start periodic AQI monitoring
+  void _startMonitoring() {
+    _monitoringTimer?.cancel();
+    _monitoringTimer = Timer.periodic(
+      const Duration(minutes: 15),
+      (_) => checkAllThresholds(),
+    );
+  }
+
+  /// Check AQI for ALL thresholds and trigger alerts if exceeded
+  Future<void> checkAllThresholds() async {
+    if (_thresholds.isEmpty || _userId == null) return;
+
+    debugPrint('Checking ${_thresholds.length} thresholds...');
+
+    for (final threshold in _thresholds) {
+      try {
+        final reading = await _apiService.getAqiByCityName(threshold.city);
+        if (reading == null) {
+          debugPrint('Could not get AQI for ${threshold.city}');
+          continue;
+        }
+
+        debugPrint(
+          '${threshold.city}: AQI=${reading.aqi}, Threshold=${threshold.aqi}',
+        );
+
+        // Check if AQI exceeds threshold
+        if (reading.aqi >= threshold.aqi) {
+          await _triggerAlert(
+            userId: _userId!,
+            threshold: threshold,
+            currentAqi: reading.aqi,
+          );
+        }
+      } catch (e) {
+        debugPrint('Error checking ${threshold.city}: $e');
+      }
+    }
+  }
+
+  /// Trigger an alert — save to history + send notification
+  Future<void> _triggerAlert({
+    required String userId,
+    required AlertThreshold threshold,
+    required int currentAqi,
+  }) async {
+    try {
+      // Create alert history record
+      final alertHistory = AlertHistory.fromThreshold(
+        thresholdId: threshold.id,
+        userId: userId,
+        city: threshold.city,
+        currentAqi: currentAqi,
+        threshold: threshold.aqi,
+      );
+
+      final saved = await _firestoreService.createAlertHistory(alertHistory);
+
+      // Send local notification
+      await _notificationService.sendAlertNotification(
+        city: threshold.city,
+        currentAqi: currentAqi,
+        threshold: threshold.aqi,
+        message: saved.message,
+        thresholdId: threshold.id,
+      );
+
+      // Add to local list
+      _alertHistory.insert(0, saved);
+      notifyListeners();
+
+      debugPrint('🚨 Alert triggered for ${threshold.city}! AQI: $currentAqi >= ${threshold.aqi}');
+    } catch (e) {
+      debugPrint('Error triggering alert: $e');
     }
   }
 
@@ -72,6 +163,7 @@ class AlertProvider extends ChangeNotifier {
   }) async {
     _isLoading = true;
     _error = null;
+    _userId = userId;
     notifyListeners();
 
     try {
@@ -88,6 +180,17 @@ class AlertProvider extends ChangeNotifier {
       _thresholds.add(threshold);
       _isLoading = false;
       notifyListeners();
+
+      // Immediately check this new threshold
+      final reading = await _apiService.getAqiByCityName(city);
+      if (reading != null && reading.aqi >= aqi) {
+        await _triggerAlert(
+          userId: userId,
+          threshold: threshold,
+          currentAqi: reading.aqi,
+        );
+      }
+
       return true;
     } catch (e) {
       _error = 'Failed to create threshold: $e';
@@ -161,54 +264,10 @@ class AlertProvider extends ChangeNotifier {
     }
   }
 
-  /// Check AQI dan trigger alert jika melebihi threshold
-  Future<void> checkAndTriggerAlert(
-    String userId,
-    String thresholdId,
-    String city,
-    int currentAqi,
-  ) async {
-    try {
-      AlertThreshold? threshold;
-      try {
-        threshold = _thresholds.firstWhere((t) => t.id == thresholdId);
-      } catch (e) {
-        threshold = null;
-      }
-
-      if (threshold == null) {
-        debugPrint('Threshold not found: $thresholdId');
-        return;
-      }
-
-      // Jika AQI melebihi threshold
-      if (currentAqi >= threshold.aqi) {
-        // Create alert history
-        final alertHistory = AlertHistory.fromThreshold(
-          thresholdId: thresholdId,
-          userId: userId,
-          city: city,
-          currentAqi: currentAqi,
-          threshold: threshold.aqi,
-        );
-
-        await _firestoreService.createAlertHistory(alertHistory);
-
-        // Send notification
-        await _notificationService.sendAlertNotification(
-          city: city,
-          currentAqi: currentAqi,
-          threshold: threshold.aqi,
-          message: alertHistory.message,
-          thresholdId: thresholdId,
-        );
-
-        // Reload history
-        await loadAlertHistory(userId);
-      }
-    } catch (e) {
-      debugPrint('Error checking and triggering alert: $e');
-    }
+  /// Manually trigger a check (e.g. from a "Check Now" button)
+  Future<void> manualCheck() async {
+    if (_userId == null) return;
+    await checkAllThresholds();
   }
 
   /// Delete alert history
@@ -261,5 +320,11 @@ class AlertProvider extends ChangeNotifier {
   void clearError() {
     _error = null;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _monitoringTimer?.cancel();
+    super.dispose();
   }
 }

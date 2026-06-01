@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:napas_aman/core/api/waqi_api_service.dart';
+import 'package:napas_aman/core/api/air_quality_api_service.dart';
 import '../models/alert_threshold.dart';
 import '../models/alert_history.dart';
 import 'firestore_alert_service.dart';
@@ -14,7 +14,7 @@ class AqiMonitoringService {
 
   AqiMonitoringService._internal();
 
-  final WaqiApiService _waqiService = WaqiApiService();
+  final AirQualityApiService _apiService = AirQualityApiService();
   final FirestoreAlertService _firestoreService = FirestoreAlertService();
   final NotificationService _notificationService = NotificationService();
 
@@ -32,8 +32,8 @@ class AqiMonitoringService {
   /// Check single threshold
   Future<void> _checkThreshold(String userId, AlertThreshold threshold) async {
     try {
-      // Get current AQI from WAQI
-      final aqi = await _waqiService.getAqiByCity(threshold.city);
+      // Get current AQI from Open-Meteo
+      final aqi = await _apiService.getAqiByCityName(threshold.city);
 
       if (aqi == null) {
         debugPrint('Failed to get AQI for ${threshold.city}');
@@ -76,7 +76,7 @@ class AqiMonitoringService {
   /// Check specific city AQI
   Future<int?> checkCityAqi(String city) async {
     try {
-      final aqi = await _waqiService.getAqiByCity(city);
+      final aqi = await _apiService.getAqiByCityName(city);
       return aqi?.aqi;
     } catch (e) {
       debugPrint('Error checking city AQI: $e');

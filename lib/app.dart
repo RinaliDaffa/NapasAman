@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
 import 'shared/providers/auth_provider.dart';
 import 'features/alerts/presentation/providers/alert_provider.dart';
+import 'features/locations/presentation/providers/location_provider.dart';
 import 'shared/widgets/app_bottom_nav.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
 import 'features/home/presentation/screens/home_screen.dart';
@@ -18,6 +20,7 @@ class NapasAmanApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => AlertProvider()),
+        ChangeNotifierProvider(create: (_) => LocationProvider()),
       ],
       child: MaterialApp(
         title: 'NapasAman',
@@ -97,12 +100,49 @@ class ProfileScreen extends StatelessWidget {
                 _buildProfileTile(
                   icon: Icons.notifications,
                   title: 'Pengaturan Notifikasi',
-                  onTap: () {},
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Notifikasi dikelola dari tab Alerts'),
+                      ),
+                    );
+                  },
                 ),
                 _buildProfileTile(
                   icon: Icons.info_outline,
                   title: 'Tentang NapasAman',
-                  onTap: () {},
+                  onTap: () => _showAboutDialog(context),
+                ),
+                _buildProfileTile(
+                  icon: Icons.bug_report,
+                  title: 'Test Crash (Debug)',
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Test Crashlytics'),
+                        content: const Text(
+                          'Ini akan mengirim test crash ke Firebase Crashlytics. App mungkin akan berhenti sebentar.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('Batal'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(ctx);
+                              FirebaseCrashlytics.instance.crash();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.orange,
+                            ),
+                            child: const Text('Kirim Test Crash'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
                 const Spacer(),
                 ElevatedButton.icon(
@@ -120,6 +160,50 @@ class ProfileScreen extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+
+  static void _showAboutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Tentang NapasAman'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'NapasAman v1.0.0',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Aplikasi pemantau kualitas udara (AQI) real-time untuk kota-kota di Indonesia. '
+              'Mendukung notifikasi otomatis jika AQI melampaui batas aman.',
+            ),
+            SizedBox(height: 16),
+            Text(
+              'SDG 3 — Good Health and Well-being',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: 12),
+            Text('Tim Pengembang:'),
+            Text('• Daffa Rinali (5025231209) — Modul Lokasi'),
+            Text('• Royyan (5025231223) — Modul Alerts'),
+            SizedBox(height: 12),
+            Text(
+              'Data kualitas udara dari Open-Meteo API',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Tutup'),
+          ),
+        ],
       ),
     );
   }

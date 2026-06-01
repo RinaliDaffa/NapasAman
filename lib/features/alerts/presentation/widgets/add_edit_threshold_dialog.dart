@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../locations/presentation/providers/location_provider.dart';
+import '../../../locations/data/models/saved_location.dart';
 
+/// Dialog for adding/editing alert thresholds — picks from saved locations
 class AddEditThresholdDialog extends StatefulWidget {
-  final String? city;
+  final String? city; // If editing, city is locked
   final int? initialAqi;
   final String? initialLabel;
   final Function(String city, int aqi, String? label) onSubmit;
@@ -19,15 +23,16 @@ class AddEditThresholdDialog extends StatefulWidget {
 }
 
 class _AddEditThresholdDialogState extends State<AddEditThresholdDialog> {
-  late TextEditingController _cityController;
   late TextEditingController _aqiController;
   late TextEditingController _labelController;
+  SavedLocation? _selectedLocation;
   bool _isLoading = false;
+  bool _isEditing = false;
 
   @override
   void initState() {
     super.initState();
-    _cityController = TextEditingController(text: widget.city ?? '');
+    _isEditing = widget.city != null;
     _aqiController =
         TextEditingController(text: widget.initialAqi?.toString() ?? '');
     _labelController = TextEditingController(text: widget.initialLabel ?? '');
@@ -35,16 +40,25 @@ class _AddEditThresholdDialogState extends State<AddEditThresholdDialog> {
 
   @override
   void dispose() {
-    _cityController.dispose();
     _aqiController.dispose();
     _labelController.dispose();
     super.dispose();
   }
 
   void _submit() {
-    if (_cityController.text.isEmpty || _aqiController.text.isEmpty) {
+    final cityName =
+        _isEditing ? widget.city! : _selectedLocation?.cityName;
+
+    if (cityName == null || cityName.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Harap isi semua field yang wajib')),
+        const SnackBar(content: Text('Pilih lokasi terlebih dahulu')),
+      );
+      return;
+    }
+
+    if (_aqiController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Harap isi batas AQI')),
       );
       return;
     }
@@ -60,9 +74,11 @@ class _AddEditThresholdDialogState extends State<AddEditThresholdDialog> {
     setState(() => _isLoading = true);
 
     widget.onSubmit(
-      _cityController.text.trim(),
+      cityName,
       aqi,
-      _labelController.text.trim().isEmpty ? null : _labelController.text.trim(),
+      _labelController.text.trim().isEmpty
+          ? null
+          : _labelController.text.trim(),
     );
 
     Navigator.of(context).pop();
@@ -71,23 +87,40 @@ class _AddEditThresholdDialogState extends State<AddEditThresholdDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.city == null ? 'Tambah Threshold' : 'Edit Threshold'),
+      title: Text(_isEditing ? 'Edit Threshold' : 'Tambah Threshold'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(
-              controller: _cityController,
-              enabled: widget.city == null,
-              decoration: InputDecoration(
-                labelText: 'Nama Kota *',
-                hintText: 'contoh: Surabaya',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+            // Location picker (only when adding new)
+            if (!_isEditing) ...[
+              _buildLocationPicker(),
+              const SizedBox(height: 12),
+            ] else
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[50],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.blue[200]!),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.location_on,
+                          color: Colors.blue, size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        widget.city!,
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
+
+            // AQI threshold
             TextField(
               controller: _aqiController,
               keyboardType: TextInputType.number,
@@ -100,17 +133,21 @@ class _AddEditThresholdDialogState extends State<AddEditThresholdDialog> {
               ),
             ),
             const SizedBox(height: 12),
+
+            // Label
             TextField(
               controller: _labelController,
               decoration: InputDecoration(
                 labelText: 'Label (Opsional)',
-                hintText: 'contoh: Kampus, Kos, Rumah',
+                hintText: 'contoh: Batas bahaya, Batas aman',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
             ),
             const SizedBox(height: 12),
+
+            // AQI guide
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
@@ -118,9 +155,24 @@ class _AddEditThresholdDialogState extends State<AddEditThresholdDialog> {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.blue[200]!),
               ),
-              child: const Text(
-                'Tip: Atur batas AQI sesuai kebutuhan Anda. Aplikasi akan mengirim notifikasi jika AQI melampaui batas ini.',
-                style: TextStyle(fontSize: 12, color: Colors.blue),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Panduan AQI:',
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue),
+                  ),
+                  SizedBox(height: 4),
+                  Text('0-50: Baik   •   51-100: Sedang',
+                      style: TextStyle(fontSize: 11, color: Colors.blue)),
+                  Text('101-150: Tidak sehat (sensitif)',
+                      style: TextStyle(fontSize: 11, color: Colors.blue)),
+                  Text('151-200: Tidak sehat   •   201+: Berbahaya',
+                      style: TextStyle(fontSize: 11, color: Colors.blue)),
+                ],
               ),
             ),
           ],
@@ -142,6 +194,79 @@ class _AddEditThresholdDialogState extends State<AddEditThresholdDialog> {
               : const Text('Simpan'),
         ),
       ],
+    );
+  }
+
+  Widget _buildLocationPicker() {
+    return Consumer<LocationProvider>(
+      builder: (context, locationProvider, _) {
+        final locations = locationProvider.locations;
+
+        if (locations.isEmpty) {
+          return Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.orange[50],
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.orange[300]!),
+            ),
+            child: const Row(
+              children: [
+                Icon(Icons.info_outline, color: Colors.orange, size: 20),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Belum ada lokasi tersimpan. Tambahkan lokasi di tab Lokasi terlebih dahulu.',
+                    style: TextStyle(fontSize: 12, color: Colors.orange),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return DropdownButtonFormField<SavedLocation>(
+          initialValue: _selectedLocation,
+          decoration: InputDecoration(
+            labelText: 'Pilih Lokasi *',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            prefixIcon: const Icon(Icons.location_on),
+          ),
+          hint: const Text('Pilih dari lokasi tersimpan'),
+          isExpanded: true,
+          items: locations.map((location) {
+            final aqi = locationProvider.getAqiForLocation(location.id);
+            return DropdownMenuItem<SavedLocation>(
+              value: location,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      location.displayName,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (aqi != null)
+                    Text(
+                      'AQI: ${aqi.aqi}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                ],
+              ),
+            );
+          }).toList(),
+          onChanged: (location) {
+            setState(() {
+              _selectedLocation = location;
+            });
+          },
+        );
+      },
     );
   }
 }
