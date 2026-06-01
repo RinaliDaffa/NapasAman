@@ -40,6 +40,8 @@ ios/Runner/GoogleService-Info.plist
 # Claude / Agent configs
 .claude/
 .gemini/
+.agents/
+skills-lock.json
 
 # AI documentation and plans
 docs/
