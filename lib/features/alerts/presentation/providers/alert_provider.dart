@@ -7,6 +7,8 @@ import '../../data/services/notification_service.dart';
 import '../../../../core/api/air_quality_api_service.dart';
 
 class AlertProvider extends ChangeNotifier {
+  static const Duration _alertCooldown = Duration(hours: 1);
+
   final FirestoreAlertService _firestoreService = FirestoreAlertService();
   final NotificationService _notificationService = NotificationService();
   final AirQualityApiService _apiService = AirQualityApiService();
@@ -124,6 +126,13 @@ class AlertProvider extends ChangeNotifier {
     required int currentAqi,
   }) async {
     try {
+      if (_isWithinCooldown(threshold.id)) {
+        debugPrint(
+          'Alert for ${threshold.city} skipped because it is still in cooldown',
+        );
+        return;
+      }
+
       // Create alert history record
       final alertHistory = AlertHistory.fromThreshold(
         thresholdId: threshold.id,
@@ -148,10 +157,21 @@ class AlertProvider extends ChangeNotifier {
       _alertHistory.insert(0, saved);
       notifyListeners();
 
-      debugPrint('🚨 Alert triggered for ${threshold.city}! AQI: $currentAqi >= ${threshold.aqi}');
+      debugPrint(
+        'Alert triggered for ${threshold.city}: AQI $currentAqi >= ${threshold.aqi}',
+      );
     } catch (e) {
       debugPrint('Error triggering alert: $e');
     }
+  }
+
+  bool _isWithinCooldown(String thresholdId) {
+    final now = DateTime.now();
+    return _alertHistory.any((history) {
+      final isSameThreshold = history.thresholdId == thresholdId;
+      final elapsed = now.difference(history.triggeredAt);
+      return isSameThreshold && elapsed < _alertCooldown;
+    });
   }
 
   /// Create threshold baru

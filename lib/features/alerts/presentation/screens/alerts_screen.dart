@@ -29,13 +29,13 @@ class _AlertsScreenState extends State<AlertsScreen> with SingleTickerProviderSt
     });
 
     // Load data ketika screen dibuka
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final authProvider = context.read<AuthProvider>();
       final alertProvider = context.read<AlertProvider>();
 
       if (authProvider.isLoggedIn && authProvider.user != null) {
-        alertProvider.loadThresholds(authProvider.user!.uid);
-        alertProvider.loadAlertHistory(authProvider.user!.uid);
+        await alertProvider.loadAlertHistory(authProvider.user!.uid);
+        await alertProvider.loadThresholds(authProvider.user!.uid);
       }
     });
   }
