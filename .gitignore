@@ -50,4 +50,5 @@ docs/
 .env
 .env.*
 
-
+# Ignore Markdown files in lib directory
+lib/**/*.md

@@ -118,12 +118,12 @@ class AqiReading {
   }
 
   static String getCategory(int aqi) {
-    if (aqi <= 50) return 'Good';
-    if (aqi <= 100) return 'Moderate';
-    if (aqi <= 150) return 'Unhealthy for Sensitive Groups';
-    if (aqi <= 200) return 'Unhealthy';
-    if (aqi <= 300) return 'Very Unhealthy';
-    return 'Hazardous';
+    if (aqi <= 50) return 'Baik';
+    if (aqi <= 100) return 'Sedang';
+    if (aqi <= 150) return 'Tidak Sehat (Kelompok Sensitif)';
+    if (aqi <= 200) return 'Tidak Sehat';
+    if (aqi <= 300) return 'Sangat Tidak Sehat';
+    return 'Berbahaya';
   }
 
   /// Get health recommendation based on AQI
