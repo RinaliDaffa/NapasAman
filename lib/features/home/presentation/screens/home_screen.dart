@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:geolocator_android/geolocator_android.dart';
 import '../../../../shared/providers/auth_provider.dart';
 import '../../../locations/presentation/providers/location_provider.dart';
 import '../../../alerts/presentation/providers/alert_provider.dart';
@@ -7,6 +9,7 @@ import '../../../../core/api/air_quality_api_service.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../models/aqi_model.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 /// Home screen — dashboard showing current location AQI, saved locations, and recent alerts
 class HomeScreen extends StatefulWidget {
@@ -65,11 +68,26 @@ class _HomeScreenState extends State<HomeScreen> {
         return;
       }
 
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
+      late LocationSettings locationSettings;
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        locationSettings = AndroidSettings(
+          accuracy: LocationAccuracy.low,
+          timeLimit: const Duration(seconds: 10),
+          forceLocationManager: true,
+        );
+      } else {
+        locationSettings = const LocationSettings(
           accuracy: LocationAccuracy.low,
           timeLimit: Duration(seconds: 10),
-        ),
+        );
+      }
+
+      // Coba ambil lokasi terakhir yang diketahui terlebih dahulu (sangat berguna untuk emulator)
+      Position? position = await Geolocator.getLastKnownPosition();
+      
+      // Jika belum ada riwayat lokasi sama sekali, baru paksa ambil yang baru
+      position ??= await Geolocator.getCurrentPosition(
+        locationSettings: locationSettings,
       );
 
       final reading = await _apiService.getAqiByCoords(
@@ -77,11 +95,25 @@ class _HomeScreenState extends State<HomeScreen> {
         position.longitude,
       );
 
+      String cityName = 'Lokasi Saat Ini';
+      try {
+        final placemarks = await placemarkFromCoordinates(
+          position.latitude,
+          position.longitude,
+        );
+        if (placemarks.isNotEmpty) {
+          final p = placemarks.first;
+          cityName = p.locality ?? p.subAdministrativeArea ?? 'Lokasi Saat Ini';
+          if (cityName.isEmpty) cityName = 'Lokasi Saat Ini';
+        }
+      } catch (_) {}
+
       setState(() {
-        _currentLocationAqi = reading?.copyWith(city: 'Lokasi Saat Ini');
+        _currentLocationAqi = reading?.copyWith(city: cityName);
         _isLoadingCurrentAqi = false;
       });
     } catch (e) {
+      print("Location Error: $e");
       // Fallback to Jakarta on any error
       final reading = await _apiService.getAqiByCoords(-6.2088, 106.8456);
       setState(() {
