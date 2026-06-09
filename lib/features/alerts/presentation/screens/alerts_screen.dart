@@ -241,12 +241,16 @@ class _AlertsScreenState extends State<AlertsScreen> with SingleTickerProviderSt
   }
 
   void _showAddThresholdDialog(BuildContext context) {
+    final alertProvider = context.read<AlertProvider>();
+
     showDialog(
       context: context,
       builder: (context) => AddEditThresholdDialog(
+        existingCities: alertProvider.thresholds
+            .map((threshold) => threshold.city)
+            .toList(),
         onSubmit: (city, aqi, label) {
           final auth = context.read<AuthProvider>();
-          final alertProvider = context.read<AlertProvider>();
 
           if (auth.user != null) {
             alertProvider.createThreshold(
