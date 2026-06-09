@@ -73,7 +73,7 @@ class AirQualityApiService {
         final json = jsonDecode(response.body);
         final results = json['results'] as List<dynamic>?;
         if (results == null) return [];
-
+      
         return results.map((item) {
           return <String, dynamic>{
             'name': item['name'] ?? '',
