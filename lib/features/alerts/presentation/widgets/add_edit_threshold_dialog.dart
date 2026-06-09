@@ -8,6 +8,7 @@ class AddEditThresholdDialog extends StatefulWidget {
   final String? city; // If editing, city is locked
   final int? initialAqi;
   final String? initialLabel;
+  final List<String> existingCities;
   final Function(String city, int aqi, String? label) onSubmit;
 
   const AddEditThresholdDialog({
@@ -15,6 +16,7 @@ class AddEditThresholdDialog extends StatefulWidget {
     this.city,
     this.initialAqi,
     this.initialLabel,
+    this.existingCities = const [],
     required this.onSubmit,
   });
 
@@ -52,6 +54,16 @@ class _AddEditThresholdDialogState extends State<AddEditThresholdDialog> {
     if (cityName == null || cityName.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Pilih lokasi terlebih dahulu')),
+      );
+      return;
+    }
+
+    final alreadyHasThreshold = widget.existingCities.any(
+      (city) => city.trim().toLowerCase() == cityName.trim().toLowerCase(),
+    );
+    if (!_isEditing && alreadyHasThreshold) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Threshold untuk $cityName sudah ada')),
       );
       return;
     }

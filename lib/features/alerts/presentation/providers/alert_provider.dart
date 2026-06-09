@@ -30,6 +30,13 @@ class AlertProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
+  bool hasThresholdForCity(String city) {
+    final normalizedCity = city.trim().toLowerCase();
+    return _thresholds.any(
+      (threshold) => threshold.city.trim().toLowerCase() == normalizedCity,
+    );
+  }
+
   /// Initialize provider
   Future<void> initialize() async {
     try {
@@ -187,6 +194,13 @@ class AlertProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      if (hasThresholdForCity(city)) {
+        _error = 'Threshold untuk $city sudah ada';
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+
       final threshold = await _firestoreService.createThreshold(
         userId,
         city,
