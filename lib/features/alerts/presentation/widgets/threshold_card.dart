@@ -91,7 +91,9 @@ class ThresholdCard extends StatelessWidget {
       context: context,
       builder: (BuildContext context) => AlertDialog(
         title: const Text('Hapus Threshold'),
-        content: Text('Apakah Anda yakin ingin menghapus threshold untuk ${threshold.city}?'),
+        content: Text(
+          'Apakah Anda yakin ingin menghapus threshold untuk ${threshold.city}?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),

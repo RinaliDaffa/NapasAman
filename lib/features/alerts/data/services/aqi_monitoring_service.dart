@@ -6,7 +6,8 @@ import 'firestore_alert_service.dart';
 import 'notification_service.dart';
 
 class AqiMonitoringService {
-  static final AqiMonitoringService _instance = AqiMonitoringService._internal();
+  static final AqiMonitoringService _instance =
+      AqiMonitoringService._internal();
 
   factory AqiMonitoringService() {
     return _instance;
@@ -19,7 +20,10 @@ class AqiMonitoringService {
   final NotificationService _notificationService = NotificationService();
 
   /// Check AQI for all thresholds dan trigger alerts jika needed
-  Future<void> checkAllThresholds(String userId, List<AlertThreshold> thresholds) async {
+  Future<void> checkAllThresholds(
+    String userId,
+    List<AlertThreshold> thresholds,
+  ) async {
     try {
       for (var threshold in thresholds) {
         await _checkThreshold(userId, threshold);

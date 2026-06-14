@@ -32,15 +32,13 @@ class NotificationService {
     final token = await _firebaseMessaging.getToken();
     debugPrint('FCM Token: $token');
 
-    const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     const iosSettings = DarwinInitializationSettings();
 
     await _localNotifications.initialize(
-      const InitializationSettings(
-        android: androidSettings,
-        iOS: iosSettings,
-      ),
+      const InitializationSettings(android: androidSettings, iOS: iosSettings),
       onDidReceiveNotificationResponse: _handleNotificationTap,
     );
 
@@ -103,7 +101,9 @@ class NotificationService {
     }
   }
 
-  Future<void> _showForegroundNotification(RemoteNotification notification) async {
+  Future<void> _showForegroundNotification(
+    RemoteNotification notification,
+  ) async {
     const androidDetails = AndroidNotificationDetails(
       'air_quality_alert',
       'Air Quality Alerts',
@@ -138,7 +138,9 @@ class NotificationService {
 
   Future<void> subscribeToThresholdTopic(AlertThreshold threshold) async {
     try {
-      final topicName = 'alert_${threshold.id}'.replaceAll('-', '_').toLowerCase();
+      final topicName = 'alert_${threshold.id}'
+          .replaceAll('-', '_')
+          .toLowerCase();
       await _firebaseMessaging.subscribeToTopic(topicName);
       debugPrint('Subscribed to topic: $topicName');
     } catch (e) {

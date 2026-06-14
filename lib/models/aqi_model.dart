@@ -128,11 +128,16 @@ class AqiReading {
 
   /// Get health recommendation based on AQI
   String get healthRecommendation {
-    if (aqi <= 50) return 'Kualitas udara baik. Aman untuk aktivitas luar ruangan.';
-    if (aqi <= 100) return 'Kualitas udara cukup. Orang sensitif sebaiknya membatasi aktivitas luar.';
-    if (aqi <= 150) return 'Tidak sehat bagi kelompok sensitif. Kurangi aktivitas luar ruangan yang berkepanjangan.';
-    if (aqi <= 200) return 'Tidak sehat. Semua orang sebaiknya membatasi aktivitas luar ruangan.';
-    if (aqi <= 300) return 'Sangat tidak sehat. Hindari aktivitas luar ruangan. Gunakan masker.';
+    if (aqi <= 50)
+      return 'Kualitas udara baik. Aman untuk aktivitas luar ruangan.';
+    if (aqi <= 100)
+      return 'Kualitas udara cukup. Orang sensitif sebaiknya membatasi aktivitas luar.';
+    if (aqi <= 150)
+      return 'Tidak sehat bagi kelompok sensitif. Kurangi aktivitas luar ruangan yang berkepanjangan.';
+    if (aqi <= 200)
+      return 'Tidak sehat. Semua orang sebaiknya membatasi aktivitas luar ruangan.';
+    if (aqi <= 300)
+      return 'Sangat tidak sehat. Hindari aktivitas luar ruangan. Gunakan masker.';
     return 'Berbahaya! Tetap di dalam ruangan. Gunakan air purifier jika tersedia.';
   }
 }

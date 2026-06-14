@@ -85,10 +85,7 @@ class _EditLocationDialogState extends State<EditLocationDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Batal'),
         ),
-        ElevatedButton(
-          onPressed: _submit,
-          child: const Text('Simpan'),
-        ),
+        ElevatedButton(onPressed: _submit, child: const Text('Simpan')),
       ],
     );
   }

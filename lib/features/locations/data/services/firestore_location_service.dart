@@ -41,9 +41,9 @@ class FirestoreLocationService {
         updatedAt: now,
       );
 
-      final docRef = await _firestore.collection(_collection).add(
-            location.toFirestore(),
-          );
+      final docRef = await _firestore
+          .collection(_collection)
+          .add(location.toFirestore());
 
       return location.copyWith(id: docRef.id);
     } catch (e) {
@@ -75,8 +75,10 @@ class FirestoreLocationService {
   /// Get a single location by ID
   Future<SavedLocation?> getLocationById(String locationId) async {
     try {
-      final doc =
-          await _firestore.collection(_collection).doc(locationId).get();
+      final doc = await _firestore
+          .collection(_collection)
+          .doc(locationId)
+          .get();
       if (!doc.exists || doc.data() == null) return null;
       return SavedLocation.fromFirestore(doc.id, doc.data()!);
     } catch (e) {
@@ -145,8 +147,10 @@ class FirestoreLocationService {
         .where('userId', isEqualTo: userId)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => SavedLocation.fromFirestore(doc.id, doc.data()))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => SavedLocation.fromFirestore(doc.id, doc.data()))
+              .toList(),
+        );
   }
 }

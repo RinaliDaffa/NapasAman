@@ -58,7 +58,8 @@ class _LocationsScreenState extends State<LocationsScreen> {
       ),
       body: Consumer<LocationProvider>(
         builder: (context, locationProvider, _) {
-          if (locationProvider.isLoading && locationProvider.locations.isEmpty) {
+          if (locationProvider.isLoading &&
+              locationProvider.locations.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
 
@@ -68,8 +69,7 @@ class _LocationsScreenState extends State<LocationsScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline,
-                      size: 64, color: Colors.red),
+                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
                   const SizedBox(height: 16),
                   Text(
                     locationProvider.error!,
@@ -93,8 +93,7 @@ class _LocationsScreenState extends State<LocationsScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.location_off,
-                        size: 80, color: Colors.grey[400]),
+                    Icon(Icons.location_off, size: 80, color: Colors.grey[400]),
                     const SizedBox(height: 16),
                     Text(
                       'Belum ada lokasi tersimpan',
@@ -107,10 +106,7 @@ class _LocationsScreenState extends State<LocationsScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'Tambahkan lokasi untuk memantau kualitas udara secara real-time',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[500],
-                      ),
+                      style: TextStyle(fontSize: 14, color: Colors.grey[500]),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 24),
@@ -132,8 +128,9 @@ class _LocationsScreenState extends State<LocationsScreen> {
               itemCount: locationProvider.locations.length,
               itemBuilder: (context, index) {
                 final location = locationProvider.locations[index];
-                final aqiReading =
-                    locationProvider.getAqiForLocation(location.id);
+                final aqiReading = locationProvider.getAqiForLocation(
+                  location.id,
+                );
 
                 return LocationCard(
                   location: location,
@@ -228,12 +225,11 @@ class _LocationsScreenState extends State<LocationsScreen> {
             onPressed: () {
               Navigator.of(context).pop();
               locationProvider.deleteLocation(location.id);
-              ScaffoldMessenger.of(this.context).showSnackBar(
-                const SnackBar(content: Text('Lokasi dihapus')),
-              );
+              ScaffoldMessenger.of(
+                this.context,
+              ).showSnackBar(const SnackBar(content: Text('Lokasi dihapus')));
             },
-            child:
-                const Text('Hapus', style: TextStyle(color: Colors.red)),
+            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

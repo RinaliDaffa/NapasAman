@@ -34,7 +34,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (!success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login gagal. Periksa email dan password.')),
+        const SnackBar(
+          content: Text('Login gagal. Periksa email dan password.'),
+        ),
       );
     }
   }
@@ -72,7 +74,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     prefixIcon: Icon(Icons.email),
                     border: OutlineInputBorder(),
                   ),
-                  validator: (v) => v!.contains('@') ? null : 'Masukkan email yang valid',
+                  validator: (v) =>
+                      v!.contains('@') ? null : 'Masukkan email yang valid',
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -83,11 +86,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     prefixIcon: const Icon(Icons.lock),
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
-                      icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
+                      icon: Icon(
+                        _obscure ? Icons.visibility : Icons.visibility_off,
+                      ),
                       onPressed: () => setState(() => _obscure = !_obscure),
                     ),
                   ),
-                  validator: (v) => v!.length >= 6 ? null : 'Minimal 6 karakter',
+                  validator: (v) =>
+                      v!.length >= 6 ? null : 'Minimal 6 karakter',
                 ),
                 const SizedBox(height: 24),
                 Consumer<AuthProvider>(

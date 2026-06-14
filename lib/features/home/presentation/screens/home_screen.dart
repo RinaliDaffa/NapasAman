@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       // Coba ambil lokasi terakhir yang diketahui terlebih dahulu (sangat berguna untuk emulator)
       Position? position = await Geolocator.getLastKnownPosition();
-      
+
       // Jika belum ada riwayat lokasi sama sekali, baru paksa ambil yang baru
       position ??= await Geolocator.getCurrentPosition(
         locationSettings: locationSettings,
@@ -127,10 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('NapasAman'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('NapasAman'), centerTitle: true),
       body: RefreshIndicator(
         onRefresh: _loadAllData,
         child: SingleChildScrollView(
@@ -176,9 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
           color: Colors.grey[300],
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const Center(
-          child: Text('Gagal memuat data AQI'),
-        ),
+        child: const Center(child: Text('Gagal memuat data AQI')),
       );
     }
 
@@ -279,11 +274,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   if (_currentLocationAqi!.pm25 != null)
-                    _buildPollutantChip(
-                        'PM2.5', _currentLocationAqi!.pm25!),
+                    _buildPollutantChip('PM2.5', _currentLocationAqi!.pm25!),
                   if (_currentLocationAqi!.pm10 != null)
-                    _buildPollutantChip(
-                        'PM10', _currentLocationAqi!.pm10!),
+                    _buildPollutantChip('PM10', _currentLocationAqi!.pm10!),
                   if (_currentLocationAqi!.o3 != null)
                     _buildPollutantChip('O₃', _currentLocationAqi!.o3!),
                 ],
@@ -338,10 +331,7 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
               child: Text(
                 'Lokasi Tersimpan',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
             SizedBox(
@@ -390,10 +380,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             if (aqi != null)
                               Text(
                                 aqi.category,
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: color,
-                                ),
+                                style: TextStyle(fontSize: 10, color: color),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -427,10 +414,7 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Text(
                 'Alert Terbaru',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
             ...recentAlerts.map((alert) {

@@ -4,7 +4,8 @@ import '../models/alert_threshold.dart';
 import '../models/alert_history.dart';
 
 class FirestoreAlertService {
-  static final FirestoreAlertService _instance = FirestoreAlertService._internal();
+  static final FirestoreAlertService _instance =
+      FirestoreAlertService._internal();
 
   factory FirestoreAlertService() {
     return _instance;
@@ -95,9 +96,7 @@ class FirestoreAlertService {
     String? newLabel,
   }) async {
     try {
-      final updates = <String, dynamic>{
-        'aqi': newAqi,
-      };
+      final updates = <String, dynamic>{'aqi': newAqi};
 
       if (newLabel != null) {
         updates['label'] = newLabel;
@@ -187,10 +186,7 @@ class FirestoreAlertService {
   /// DELETE - Hapus alert history
   Future<void> deleteAlertHistory(String historyId) async {
     try {
-      await _firestore
-          .collection(_historyCollection)
-          .doc(historyId)
-          .delete();
+      await _firestore.collection(_historyCollection).doc(historyId).delete();
     } catch (e) {
       debugPrint('Error deleting alert history: $e');
       rethrow;
@@ -221,9 +217,11 @@ class FirestoreAlertService {
         .where('userId', isEqualTo: userId)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => AlertThreshold.fromFirestore(doc.id, doc.data()))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => AlertThreshold.fromFirestore(doc.id, doc.data()))
+              .toList(),
+        );
   }
 
   /// Stream - Watch alert history
@@ -234,8 +232,10 @@ class FirestoreAlertService {
         .orderBy('triggeredAt', descending: true)
         .limit(50)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => AlertHistory.fromFirestore(doc.id, doc.data()))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => AlertHistory.fromFirestore(doc.id, doc.data()))
+              .toList(),
+        );
   }
 }

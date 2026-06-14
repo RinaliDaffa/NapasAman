@@ -35,8 +35,9 @@ class _AddEditThresholdDialogState extends State<AddEditThresholdDialog> {
   void initState() {
     super.initState();
     _isEditing = widget.city != null;
-    _aqiController =
-        TextEditingController(text: widget.initialAqi?.toString() ?? '');
+    _aqiController = TextEditingController(
+      text: widget.initialAqi?.toString() ?? '',
+    );
     _labelController = TextEditingController(text: widget.initialLabel ?? '');
   }
 
@@ -48,8 +49,7 @@ class _AddEditThresholdDialogState extends State<AddEditThresholdDialog> {
   }
 
   void _submit() {
-    final cityName =
-        _isEditing ? widget.city! : _selectedLocation?.cityName;
+    final cityName = _isEditing ? widget.city! : _selectedLocation?.cityName;
 
     if (cityName == null || cityName.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -69,17 +69,17 @@ class _AddEditThresholdDialogState extends State<AddEditThresholdDialog> {
     }
 
     if (_aqiController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Harap isi batas AQI')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Harap isi batas AQI')));
       return;
     }
 
     final aqi = int.tryParse(_aqiController.text);
     if (aqi == null || aqi < 0 || aqi > 500) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('AQI harus antara 0-500')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('AQI harus antara 0-500')));
       return;
     }
 
@@ -120,8 +120,11 @@ class _AddEditThresholdDialogState extends State<AddEditThresholdDialog> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.location_on,
-                          color: Colors.blue, size: 20),
+                      const Icon(
+                        Icons.location_on,
+                        color: Colors.blue,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         widget.city!,
@@ -173,17 +176,24 @@ class _AddEditThresholdDialogState extends State<AddEditThresholdDialog> {
                   Text(
                     'Panduan AQI:',
                     style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue),
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                    ),
                   ),
                   SizedBox(height: 4),
-                  Text('0-50: Baik   •   51-100: Sedang',
-                      style: TextStyle(fontSize: 11, color: Colors.blue)),
-                  Text('101-150: Tidak sehat (sensitif)',
-                      style: TextStyle(fontSize: 11, color: Colors.blue)),
-                  Text('151-200: Tidak sehat   •   201+: Berbahaya',
-                      style: TextStyle(fontSize: 11, color: Colors.blue)),
+                  Text(
+                    '0-50: Baik   •   51-100: Sedang',
+                    style: TextStyle(fontSize: 11, color: Colors.blue),
+                  ),
+                  Text(
+                    '101-150: Tidak sehat (sensitif)',
+                    style: TextStyle(fontSize: 11, color: Colors.blue),
+                  ),
+                  Text(
+                    '151-200: Tidak sehat   •   201+: Berbahaya',
+                    style: TextStyle(fontSize: 11, color: Colors.blue),
+                  ),
                 ],
               ),
             ),
@@ -241,9 +251,7 @@ class _AddEditThresholdDialogState extends State<AddEditThresholdDialog> {
           initialValue: _selectedLocation,
           decoration: InputDecoration(
             labelText: 'Pilih Lokasi *',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             prefixIcon: const Icon(Icons.location_on),
           ),
           hint: const Text('Pilih dari lokasi tersimpan'),
@@ -263,10 +271,7 @@ class _AddEditThresholdDialogState extends State<AddEditThresholdDialog> {
                   if (aqi != null)
                     Text(
                       'AQI: ${aqi.aqi}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
                 ],
               ),

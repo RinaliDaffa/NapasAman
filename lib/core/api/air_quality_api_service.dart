@@ -73,7 +73,7 @@ class AirQualityApiService {
         final json = jsonDecode(response.body);
         final results = json['results'] as List<dynamic>?;
         if (results == null) return [];
-      
+
         return results.map((item) {
           return <String, dynamic>{
             'name': item['name'] ?? '',
@@ -98,10 +98,7 @@ class AirQualityApiService {
     final results = <AqiReading>[];
 
     for (final loc in locations) {
-      final reading = await getAqiByCoords(
-        loc['latitude']!,
-        loc['longitude']!,
-      );
+      final reading = await getAqiByCoords(loc['latitude']!, loc['longitude']!);
       if (reading != null) {
         results.add(reading);
       }

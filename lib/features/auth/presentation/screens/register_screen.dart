@@ -28,9 +28,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_passwordController.text != _confirmController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password tidak cocok')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Password tidak cocok')));
       return;
     }
 
@@ -42,9 +42,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (success && mounted) {
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Akun berhasil dibuat!')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Akun berhasil dibuat!')));
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Pendaftaran gagal. Coba lagi.')),
@@ -77,7 +77,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     prefixIcon: Icon(Icons.email),
                     border: OutlineInputBorder(),
                   ),
-                  validator: (v) => v!.contains('@') ? null : 'Masukkan email yang valid',
+                  validator: (v) =>
+                      v!.contains('@') ? null : 'Masukkan email yang valid',
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -88,11 +89,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     prefixIcon: const Icon(Icons.lock),
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
-                      icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
+                      icon: Icon(
+                        _obscure ? Icons.visibility : Icons.visibility_off,
+                      ),
                       onPressed: () => setState(() => _obscure = !_obscure),
                     ),
                   ),
-                  validator: (v) => v!.length >= 6 ? null : 'Minimal 6 karakter',
+                  validator: (v) =>
+                      v!.length >= 6 ? null : 'Minimal 6 karakter',
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -103,7 +107,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     prefixIcon: Icon(Icons.lock_outline),
                     border: OutlineInputBorder(),
                   ),
-                  validator: (v) => v!.length >= 6 ? null : 'Minimal 6 karakter',
+                  validator: (v) =>
+                      v!.length >= 6 ? null : 'Minimal 6 karakter',
                 ),
                 const SizedBox(height: 24),
                 Consumer<AuthProvider>(
@@ -117,7 +122,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       child: auth.isLoading
                           ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text('Daftar', style: TextStyle(fontSize: 16)),
+                          : const Text(
+                              'Daftar',
+                              style: TextStyle(fontSize: 16),
+                            ),
                     );
                   },
                 ),

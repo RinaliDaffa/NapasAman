@@ -6,8 +6,7 @@ import '../../../../models/aqi_model.dart';
 
 /// Provider for managing saved locations and their live AQI data
 class LocationProvider extends ChangeNotifier {
-  final FirestoreLocationService _firestoreService =
-      FirestoreLocationService();
+  final FirestoreLocationService _firestoreService = FirestoreLocationService();
   final AirQualityApiService _apiService = AirQualityApiService();
 
   List<SavedLocation> _locations = [];

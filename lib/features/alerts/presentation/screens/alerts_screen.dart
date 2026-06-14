@@ -15,7 +15,8 @@ class AlertsScreen extends StatefulWidget {
   State<AlertsScreen> createState() => _AlertsScreenState();
 }
 
-class _AlertsScreenState extends State<AlertsScreen> with SingleTickerProviderStateMixin {
+class _AlertsScreenState extends State<AlertsScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -136,7 +137,11 @@ class _AlertsScreenState extends State<AlertsScreen> with SingleTickerProviderSt
               padding: const EdgeInsets.all(32),
               child: Column(
                 children: [
-                  Icon(Icons.warning_outlined, size: 64, color: Colors.grey[400]),
+                  Icon(
+                    Icons.warning_outlined,
+                    size: 64,
+                    color: Colors.grey[400],
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     'Belum ada threshold',
@@ -161,7 +166,8 @@ class _AlertsScreenState extends State<AlertsScreen> with SingleTickerProviderSt
                 return ThresholdCard(
                   threshold: threshold,
                   onEdit: () => _showEditThresholdDialog(context, threshold),
-                  onDelete: () => _deleteThreshold(context, alertProvider, threshold.id),
+                  onDelete: () =>
+                      _deleteThreshold(context, alertProvider, threshold.id),
                 );
               },
             ),
@@ -230,7 +236,8 @@ class _AlertsScreenState extends State<AlertsScreen> with SingleTickerProviderSt
               final history = alertProvider.alertHistory[index];
               return AlertHistoryCard(
                 history: history,
-                onDelete: () => _deleteAlertHistory(context, alertProvider, history.id),
+                onDelete: () =>
+                    _deleteAlertHistory(context, alertProvider, history.id),
               );
             },
           ),
@@ -265,7 +272,10 @@ class _AlertsScreenState extends State<AlertsScreen> with SingleTickerProviderSt
     );
   }
 
-  void _showEditThresholdDialog(BuildContext context, AlertThreshold threshold) {
+  void _showEditThresholdDialog(
+    BuildContext context,
+    AlertThreshold threshold,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AddEditThresholdDialog(
@@ -280,18 +290,26 @@ class _AlertsScreenState extends State<AlertsScreen> with SingleTickerProviderSt
     );
   }
 
-  void _deleteThreshold(BuildContext context, AlertProvider alertProvider, String thresholdId) {
+  void _deleteThreshold(
+    BuildContext context,
+    AlertProvider alertProvider,
+    String thresholdId,
+  ) {
     alertProvider.deleteThreshold(thresholdId);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Threshold dihapus')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Threshold dihapus')));
   }
 
-  void _deleteAlertHistory(BuildContext context, AlertProvider alertProvider, String historyId) {
+  void _deleteAlertHistory(
+    BuildContext context,
+    AlertProvider alertProvider,
+    String historyId,
+  ) {
     alertProvider.deleteAlertHistory(historyId);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Alert dihapus')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Alert dihapus')));
   }
 
   void _clearHistory(BuildContext context, AlertProvider alertProvider) {
@@ -299,7 +317,9 @@ class _AlertsScreenState extends State<AlertsScreen> with SingleTickerProviderSt
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Bersihkan Riwayat'),
-        content: const Text('Apakah Anda yakin ingin menghapus semua riwayat alert?'),
+        content: const Text(
+          'Apakah Anda yakin ingin menghapus semua riwayat alert?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),

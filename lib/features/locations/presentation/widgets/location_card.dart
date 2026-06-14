@@ -59,8 +59,11 @@ class LocationCard extends StatelessWidget {
                             color: color,
                           ),
                         )
-                      : const Icon(Icons.hourglass_empty,
-                          size: 20, color: Colors.grey),
+                      : const Icon(
+                          Icons.hourglass_empty,
+                          size: 20,
+                          color: Colors.grey,
+                        ),
                 ),
               ),
               const SizedBox(width: 16),
@@ -80,10 +83,7 @@ class LocationCard extends StatelessWidget {
                     if (location.label != null)
                       Text(
                         location.cityName,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                       ),
                     const SizedBox(height: 4),
                     if (hasData)

@@ -19,15 +19,16 @@ class AqiLegend extends StatelessWidget {
           children: [
             const Text(
               'Kategori AQI',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             _buildLegendItem(Colors.green, '0-50', 'Baik'),
             _buildLegendItem(Colors.yellow, '51-100', 'Sedang'),
-            _buildLegendItem(Colors.orange, '101-150', 'Tidak Sehat Bagi Kelompok Sensitif'),
+            _buildLegendItem(
+              Colors.orange,
+              '101-150',
+              'Tidak Sehat Bagi Kelompok Sensitif',
+            ),
             _buildLegendItem(Colors.red, '151-200', 'Tidak Sehat'),
             _buildLegendItem(Colors.purple, '201-300', 'Sangat Tidak Sehat'),
             _buildLegendItem(Colors.brown, '>300', 'Berbahaya'),
@@ -51,10 +52,7 @@ class AqiLegend extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Text(
-            '$range - $label',
-            style: const TextStyle(fontSize: 12),
-          ),
+          Text('$range - $label', style: const TextStyle(fontSize: 12)),
         ],
       ),
     );

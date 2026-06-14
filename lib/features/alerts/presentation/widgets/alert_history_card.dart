@@ -6,11 +6,7 @@ class AlertHistoryCard extends StatelessWidget {
   final AlertHistory history;
   final VoidCallback? onDelete;
 
-  const AlertHistoryCard({
-    super.key,
-    required this.history,
-    this.onDelete,
-  });
+  const AlertHistoryCard({super.key, required this.history, this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -56,10 +52,7 @@ class AlertHistoryCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               history.message,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.white,
-              ),
+              style: const TextStyle(fontSize: 12, color: Colors.white),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),

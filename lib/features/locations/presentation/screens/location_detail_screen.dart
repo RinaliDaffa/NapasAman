@@ -21,9 +21,7 @@ class LocationDetailScreen extends StatelessWidget {
     final hasData = aqiReading != null;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(location.displayName),
-      ),
+      appBar: AppBar(title: Text(location.displayName)),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -111,10 +109,7 @@ class LocationDetailScreen extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Detail Polutan',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -128,10 +123,7 @@ class LocationDetailScreen extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Info Lokasi',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -166,15 +158,40 @@ class LocationDetailScreen extends StatelessWidget {
   Widget _buildPollutantGrid(AqiReading reading) {
     final pollutants = <Map<String, dynamic>>[
       if (reading.pm25 != null)
-        {'name': 'PM2.5', 'value': reading.pm25!, 'unit': 'μg/m³', 'icon': Icons.grain},
+        {
+          'name': 'PM2.5',
+          'value': reading.pm25!,
+          'unit': 'μg/m³',
+          'icon': Icons.grain,
+        },
       if (reading.pm10 != null)
-        {'name': 'PM10', 'value': reading.pm10!, 'unit': 'μg/m³', 'icon': Icons.blur_on},
+        {
+          'name': 'PM10',
+          'value': reading.pm10!,
+          'unit': 'μg/m³',
+          'icon': Icons.blur_on,
+        },
       if (reading.co != null)
-        {'name': 'CO', 'value': reading.co!, 'unit': 'μg/m³', 'icon': Icons.cloud},
+        {
+          'name': 'CO',
+          'value': reading.co!,
+          'unit': 'μg/m³',
+          'icon': Icons.cloud,
+        },
       if (reading.no2 != null)
-        {'name': 'NO₂', 'value': reading.no2!, 'unit': 'μg/m³', 'icon': Icons.factory},
+        {
+          'name': 'NO₂',
+          'value': reading.no2!,
+          'unit': 'μg/m³',
+          'icon': Icons.factory,
+        },
       if (reading.o3 != null)
-        {'name': 'O₃', 'value': reading.o3!, 'unit': 'μg/m³', 'icon': Icons.wb_sunny},
+        {
+          'name': 'O₃',
+          'value': reading.o3!,
+          'unit': 'μg/m³',
+          'icon': Icons.wb_sunny,
+        },
     ];
 
     return Padding(
@@ -197,7 +214,11 @@ class LocationDetailScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(p['icon'] as IconData, size: 20, color: Colors.blue[700]),
+                  Icon(
+                    p['icon'] as IconData,
+                    size: 20,
+                    color: Colors.blue[700],
+                  ),
                   const SizedBox(height: 4),
                   Text(
                     p['name'] as String,
@@ -236,18 +257,12 @@ class LocationDetailScreen extends StatelessWidget {
           const SizedBox(width: 12),
           Text(
             '$label: ',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             ),
           ),
         ],

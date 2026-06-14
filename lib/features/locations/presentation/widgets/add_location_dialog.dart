@@ -11,7 +11,8 @@ class AddLocationDialog extends StatefulWidget {
     double longitude,
     String? label,
     String? notes,
-  ) onSubmit;
+  )
+  onSubmit;
 
   const AddLocationDialog({super.key, required this.onSubmit});
 
@@ -97,8 +98,12 @@ class _AddLocationDialogState extends State<AddLocationDialog> {
       _selectedCity!['country'] as String? ?? '',
       (_selectedCity!['latitude'] as num).toDouble(),
       (_selectedCity!['longitude'] as num).toDouble(),
-      _labelController.text.trim().isEmpty ? null : _labelController.text.trim(),
-      _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+      _labelController.text.trim().isEmpty
+          ? null
+          : _labelController.text.trim(),
+      _notesController.text.trim().isEmpty
+          ? null
+          : _notesController.text.trim(),
     );
 
     Navigator.of(context).pop();
@@ -195,11 +200,14 @@ class _AddLocationDialogState extends State<AddLocationDialog> {
                           child: Wrap(
                             spacing: 8,
                             runSpacing: 8,
-                            children:
-                                AppConstants.popularCities.entries.map((entry) {
+                            children: AppConstants.popularCities.entries.map((
+                              entry,
+                            ) {
                               return ActionChip(
-                                avatar: const Icon(Icons.location_city,
-                                    size: 16),
+                                avatar: const Icon(
+                                  Icons.location_city,
+                                  size: 16,
+                                ),
                                 label: Text(entry.key),
                                 onPressed: () =>
                                     _selectPopularCity(entry.key, entry.value),
@@ -224,14 +232,19 @@ class _AddLocationDialogState extends State<AddLocationDialog> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.check_circle,
-                          color: Colors.green, size: 20),
+                      const Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           '${_selectedCity!['name']}, ${_selectedCity!['country'] ?? ''}',
                           style: const TextStyle(
-                              fontWeight: FontWeight.w600, fontSize: 14),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                     ],

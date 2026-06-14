@@ -27,7 +27,10 @@ class AlertThreshold {
   }
 
   /// Create from Firestore document
-  factory AlertThreshold.fromFirestore(String docId, Map<String, dynamic> data) {
+  factory AlertThreshold.fromFirestore(
+    String docId,
+    Map<String, dynamic> data,
+  ) {
     return AlertThreshold(
       id: docId,
       userId: data['userId'] as String? ?? '',
