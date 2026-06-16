@@ -59,8 +59,9 @@ class AlertHistory {
     required int threshold,
   }) {
     final exceedBy = currentAqi - threshold;
+    final advice = _getHealthAdvice(currentAqi);
     final message =
-        'AQI $currentAqi telah melebihi batas aman ($threshold) sebesar $exceedBy poin. Gunakan masker dan kurangi aktivitas luar ruangan.';
+        'AQI $currentAqi telah melebihi batas aman ($threshold) sebesar $exceedBy poin. $advice';
 
     return AlertHistory(
       id: '',
@@ -73,6 +74,26 @@ class AlertHistory {
       message: message,
       triggeredAt: DateTime.now(),
     );
+  }
+
+  static String _getHealthAdvice(int aqi) {
+    if (aqi <= 100) {
+      return 'Kualitas udara masih relatif aman, tetap pantau kondisi sekitar.';
+    }
+
+    if (aqi <= 150) {
+      return 'Kelompok sensitif disarankan mengurangi aktivitas luar ruangan.';
+    }
+
+    if (aqi <= 200) {
+      return 'Gunakan masker dan kurangi aktivitas luar ruangan.';
+    }
+
+    if (aqi <= 300) {
+      return 'Hindari aktivitas luar ruangan dan gunakan masker jika harus keluar.';
+    }
+
+    return 'Kondisi udara berbahaya. Tetap di dalam ruangan dan gunakan perlindungan ekstra.';
   }
 
   /// Copy with method
