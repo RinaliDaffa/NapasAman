@@ -131,6 +131,7 @@ class _AlertsScreenState extends State<AlertsScreen>
     return SingleChildScrollView(
       child: Column(
         children: [
+          _buildAlertSummary(alertProvider),
           const AqiLegend(),
           if (alertProvider.thresholds.isEmpty)
             Padding(
@@ -207,6 +208,7 @@ class _AlertsScreenState extends State<AlertsScreen>
     return SingleChildScrollView(
       child: Column(
         children: [
+          _buildAlertSummary(alertProvider),
           Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -242,6 +244,110 @@ class _AlertsScreenState extends State<AlertsScreen>
             },
           ),
           const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAlertSummary(AlertProvider alertProvider) {
+    final totalThresholds = alertProvider.thresholds.length;
+    final totalAlerts = alertProvider.alertHistory.length;
+    final highRiskThresholds = alertProvider.thresholds
+        .where((threshold) => threshold.aqi >= 151)
+        .length;
+    final latestAlert = alertProvider.alertHistory.isEmpty
+        ? 'Belum ada'
+        : alertProvider.alertHistory.first.city;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Ringkasan Monitoring',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 12),
+          GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            childAspectRatio: 2.2,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            children: [
+              _buildSummaryTile(
+                icon: Icons.notifications_active,
+                label: 'Threshold Aktif',
+                value: totalThresholds.toString(),
+                color: Colors.blue,
+              ),
+              _buildSummaryTile(
+                icon: Icons.warning_amber,
+                label: 'Total Alert',
+                value: totalAlerts.toString(),
+                color: Colors.red,
+              ),
+              _buildSummaryTile(
+                icon: Icons.health_and_safety,
+                label: 'Risiko Tinggi',
+                value: highRiskThresholds.toString(),
+                color: Colors.orange,
+              ),
+              _buildSummaryTile(
+                icon: Icons.history,
+                label: 'Alert Terbaru',
+                value: latestAlert,
+                color: Colors.teal,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryTile({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withAlpha(24),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withAlpha(70)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 11, color: Colors.grey[700]),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
